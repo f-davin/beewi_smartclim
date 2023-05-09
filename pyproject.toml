@@ -6,7 +6,6 @@ authors = ["DavTechNet <none@none.com>"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/DavTechNet/hassis_beewi_smartclim.git"
-#documentation = "https://inkbird-ble.readthedocs.io"
 classifiers = [
     "Development Status :: 1 - Planning",
     "Intended Audience :: Developers",

@@ -54,6 +54,13 @@ repos:
     rev: 6.0.0
     hooks:
       - id: flake8
+        args:
+          [
+            --max-line-length=130,
+            --max-complexity=10,
+            --exclude=tests/*,
+            "--per-file-ignores=src/smartclim_ble/__init__.py:F401",
+          ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.2.0
     hooks:

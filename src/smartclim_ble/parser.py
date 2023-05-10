@@ -59,8 +59,8 @@ class BeeWiSmartClimAdvertisement:
 
     def __init__(
         self,
-        device: Optional[BLEDevice] = None,
-        ad_data: Optional[AdvertisementData] = None,
+        device: BLEDevice = None,
+        ad_data: AdvertisementData = None,
     ):
         """Constructor."""
         self.device = device

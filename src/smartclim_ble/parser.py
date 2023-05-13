@@ -57,10 +57,12 @@ class SensorData:
         #   temperature = (t1 - t2) / 10.0
         # else:
         #   temperature = ((t0 * 255) + t1) / 10.0
-        temperature = raw_data[2 + offset] + raw_data[1 + offset]
-        if temperature > 0x8000:
-            temperature = temperature - 0x10000
-        self.temperature = temperature / 10.0
+        start_idx = 1 + offset
+        stop_idx = start_idx + 2
+        temp = int.from_bytes(raw_data[start_idx:stop_idx], "little")
+        if temp >= 0x8000:
+            temp = temp - 0xFFFF
+        self.temperature = temp / 10.0
         self.humidity = raw_data[4 + offset]
         self.battery = raw_data[9 + offset]
 

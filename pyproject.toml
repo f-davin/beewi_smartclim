@@ -48,7 +48,7 @@ version_variable = "src/smartclim_ble/__init__.py:__version__"
 build_command = "pip install poetry && poetry build"
 
 [tool.pytest.ini_options]
-addopts = "-v -Wdefault --cov=smartclim_ble --cov-report=term-missing:skip-covered"
+addopts = "-v -Wdefault"
 pythonpath = ["src"]
 
 [tool.coverage.run]

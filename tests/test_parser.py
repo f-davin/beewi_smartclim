@@ -28,3 +28,7 @@ def test_sensor_data_decode():
     # Wrong frame size
     with pytest.raises(Exception):
         sensor.decode(bytearray.fromhex("0500de00023b070000062e22"))
+
+
+def test_sensor_data_supported():
+    pass

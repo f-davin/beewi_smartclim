@@ -8,9 +8,6 @@ from bleak import BleakClient
 from bleak.backends.device import BLEDevice
 from bleak.backends.scanner import AdvertisementData
 
-CONNECTED_DATA_SIZE = 10
-ADVERTISING_DATA_SIZE = 11
-
 
 @dataclass
 class ManufacturerData:
@@ -26,6 +23,11 @@ class ManufacturerData:
 class SensorData:
     """Data to store the information about the sensor"""
 
+    # Constants
+    __CONNECTED_DATA_SIZE = 10
+    __ADVERTISING_DATA_SIZE = 11
+    __ADVERTISING_MANUFACTURING_DATA_KEY = 13
+
     name: str = ""
     temperature: float = 0.0
     humidity: int = 0
@@ -39,10 +41,10 @@ class SensorData:
         :param is_adv_data: Information if data comes from advertising data of active connection.
         :return: None
         """
-        frame_length = CONNECTED_DATA_SIZE
+        frame_length = self.__CONNECTED_DATA_SIZE
         offset = 0
         if is_adv_data:
-            frame_length = ADVERTISING_DATA_SIZE
+            frame_length = self.__ADVERTISING_DATA_SIZE
             offset = 1
 
         if len(raw_data) != frame_length:
@@ -57,28 +59,57 @@ class SensorData:
         #   temperature = (t1 - t2) / 10.0
         # else:
         #   temperature = ((t0 * 255) + t1) / 10.0
-        temperature = raw_data[2 + offset] + raw_data[1 + offset]
-        if temperature > 0x8000:
-            temperature = temperature - 0x10000
-        self.temperature = temperature / 10.0
+        start_idx = 1 + offset
+        stop_idx = start_idx + 2
+        temp = int.from_bytes(raw_data[start_idx:stop_idx], "little")
+        if temp >= 0x8000:
+            temp = temp - 0xFFFF
+        self.temperature = temp / 10.0
         self.humidity = raw_data[4 + offset]
         self.battery = raw_data[9 + offset]
 
     def supported_data(self, adv_data: AdvertisementData) -> bool:
+        """
+        Check if the advertisement frame received correspond to BeeWi SmartClim frame
+
+        Args:
+            adv_data (AdvertisementData): Frame received
+
+        Returns:
+            bool: True if corresponding, false otherwise
+        """
         ret = False
         manuf_data = adv_data.manufacturer_data
-        if len(manuf_data) != 0:
-            bytes_data = manuf_data[list(manuf_data.keys())[0]].hex()
-            if type(bytes_data) is str:
-                bytes_data = bytearray.fromhex(bytes_data)
-                if bytes_data is not None:
-                    if len(bytes_data) == CONNECTED_DATA_SIZE:
-                        ret = True
-                    elif (
-                        len(bytes_data) == ADVERTISING_DATA_SIZE
-                        and bytes_data[0] == 0x05
-                    ):
-                        ret = True
+        if (
+            len(manuf_data) == 1
+            and self.__ADVERTISING_MANUFACTURING_DATA_KEY in manuf_data.keys()
+        ):
+            bytes_data = manuf_data[self.__ADVERTISING_MANUFACTURING_DATA_KEY]
+            if (
+                len(bytes_data) == self.__ADVERTISING_DATA_SIZE
+                and bytes_data[0] == 0x05
+            ):
+                ret = True
+        return ret
+
+    def get_manufacturing_data(self, adv_data: AdvertisementData) -> bytearray:
+        """
+        Get the manufacturing data from the manufacturing frame
+
+        Args:
+            adv_data (AdvertisementData): Frame with data
+
+        Raises:
+            Exception: Invalid data detected
+
+        Returns:
+            bytearray: the data to update sensor values
+        """
+        data = adv_data.manufacturer_data
+        if self.__ADVERTISING_MANUFACTURING_DATA_KEY in data.keys():
+            ret = bytearray(data[self.__ADVERTISING_MANUFACTURING_DATA_KEY])
+        else:
+            raise Exception("Invalid data for this sensor.")
         return ret
 
 
@@ -99,9 +130,8 @@ class BeeWiSmartClimAdvertisement:
 
         if device and ad_data:
             self.readings.name = device.name
-            data = ad_data.manufacturer_data
-            key = list(data.keys())[0]
-            self.readings.decode(data[key], True)
+            data = self.readings.get_manufacturing_data(ad_data)
+            self.readings.decode(data, True)
 
 
 class BeeWiSmartClim:

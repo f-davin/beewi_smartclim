@@ -158,3 +158,58 @@ def test_sensor_data_supported():
         ),
     )
     assert sensor.supported_data(adv_data) is False
+
+
+def test_sensor_data_get_manuf_data():
+    ### Nominal case
+    sensor = SensorData()
+    adv_data = AdvertisementData(
+        local_name="089352809434933736",
+        service_data={},
+        service_uuids=[],
+        tx_power=None,
+        rssi=-82,
+        manufacturer_data={13: b"\x05\x00\x93\x00\x02V\x07\x00\x00\x06,"},
+        platform_data=(
+            "/org/bluez/hci0/dev_F0_C7_7F_85_71_EF",
+            {
+                "Address": "F0:C7:7F:85:71:EF",
+                "AddressType": "public",
+                "Name": "089352809434933736",
+                "Alias": "089352809434933736",
+                "Paired": False,
+                "Trusted": False,
+                "Blocked": False,
+                "LegacyPairing": False,
+                "RSSI": -82,
+            },
+        ),
+    )
+    assert sensor.get_manufacturing_data(adv_data) == bytearray(
+        b"\x05\x00\x93\x00\x02V\x07\x00\x00\x06,"
+    )
+
+    adv_data = AdvertisementData(
+        local_name="089352809434933736",
+        service_data={},
+        service_uuids=[],
+        tx_power=None,
+        rssi=-82,
+        manufacturer_data={15: b"\x05\x00\x93\x00\x02V\x07\x00\x00\x06,"},
+        platform_data=(
+            "/org/bluez/hci0/dev_F0_C7_7F_85_71_EF",
+            {
+                "Address": "F0:C7:7F:85:71:EF",
+                "AddressType": "public",
+                "Name": "089352809434933736",
+                "Alias": "089352809434933736",
+                "Paired": False,
+                "Trusted": False,
+                "Blocked": False,
+                "LegacyPairing": False,
+                "RSSI": -82,
+            },
+        ),
+    )
+    with pytest.raises(Exception):
+        sensor.get_manufacturing_data(adv_data)

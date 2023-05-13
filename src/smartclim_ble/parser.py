@@ -93,16 +93,17 @@ class SensorData:
         return ret
 
     def get_manufacturing_data(self, adv_data: AdvertisementData) -> bytearray:
-        """_summary_
+        """
+        Get the manufacturing data from the manufacturing frame
 
         Args:
-            adv_data (AdvertisementData): _description_
+            adv_data (AdvertisementData): Frame with data
 
         Raises:
-            Exception: _description_
+            Exception: Invalid data detected
 
         Returns:
-            bytearray: _description_
+            bytearray: the data to update sensor values
         """
         data = adv_data.manufacturer_data
         if self.__ADVERTISING_MANUFACTURING_DATA_KEY in data.keys():

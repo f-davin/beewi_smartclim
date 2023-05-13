@@ -161,3 +161,8 @@ cython_debug/
 
 # Visual studio code
 .vscode
+
+# Nodejs
+node_modules
+package.json
+package-lock.json

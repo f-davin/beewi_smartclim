@@ -1,4 +1,4 @@
-"""Parser for BeeWi SmartClim BLE devices"""
+"""Parser for BeeWi SmartClim BLE devices."""
 
 import re
 from dataclasses import dataclass
@@ -20,8 +20,8 @@ class ManufacturerData:
 
 
 @dataclass
-class SensorData:
-    """Data to store the information about the sensor"""
+class SmartClimSensorData:
+    """Data to store the information about the sensor."""
 
     # Constants
     __CONNECTED_DATA_SIZE = 10
@@ -70,7 +70,7 @@ class SensorData:
 
     def supported_data(self, adv_data: AdvertisementData) -> bool:
         """
-        Check if the advertisement frame received correspond to BeeWi SmartClim frame
+        Check if the advertisement frame received correspond to BeeWi SmartClim frame.
 
         Args:
             adv_data (AdvertisementData): Frame received
@@ -94,7 +94,7 @@ class SensorData:
 
     def get_manufacturing_data(self, adv_data: AdvertisementData) -> bytearray:
         """
-        Get the manufacturing data from the manufacturing frame
+        Get the manufacturing data from the manufacturing frame.Z
 
         Args:
             adv_data (AdvertisementData): Frame with data
@@ -118,7 +118,7 @@ class BeeWiSmartClimAdvertisement:
     """Class to realize the treatment of an advertising frame."""
 
     device: BLEDevice = None
-    readings: SensorData = SensorData()
+    readings: SmartClimSensorData = SmartClimSensorData()
 
     def __init__(
         self,
@@ -179,9 +179,9 @@ class BeeWiSmartClim:
             self.UUID_SOFTWARE_REV
         )
 
-    async def current_readings(self) -> SensorData:
+    async def current_readings(self) -> SmartClimSensorData:
         """Extract current readings from remote device"""
-        readings = SensorData()
+        readings = SmartClimSensorData()
         values = await self.device.read_gatt_char(self.UUID_GET_VALUES)
         readings.decode(values, False)
         self.last_values_read = datetime.now()

@@ -262,5 +262,18 @@ def test_bee_wi_smart_clim_advertisement():
 
 
 def test_bee_wi_smart_clim_construction():
+    ### Nominal case - correct address
+    assert BeeWiSmartClim(address="089352809434933736") is not None
+    assert BeeWiSmartClim(address="F0:C7:7F:85:71:EF") is not None
+
+    ### Error cases
     with pytest.raises(Exception):
-        smart_clim = BeeWiSmartClim(address="e")
+        BeeWiSmartClim(address="e")
+    with pytest.raises(Exception):
+        BeeWiSmartClim(address="F0:C7:7F:85:71:EG")
+    with pytest.raises(Exception):
+        BeeWiSmartClim(address="F0:C7:7F:85:71:E")
+    with pytest.raises(Exception):
+        BeeWiSmartClim(address="0893528094349337361")
+    with pytest.raises(Exception):
+        BeeWiSmartClim(address="08935280943493373")

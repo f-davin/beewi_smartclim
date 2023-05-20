@@ -145,7 +145,7 @@ class BeeWiSmartClim:
 
     # Regexp
     __REGEX_MAC = "([0-9a-f]{2}[:-]){5}([0-9a-f]{2})"
-    __REGEX_ID = r"\d{18}"
+    __REGEX_ID = r"^\d{18}$"
     __REGEX_ADDR = f"({__REGEX_MAC})|({__REGEX_ID})"
 
     def __init__(self, address: str):

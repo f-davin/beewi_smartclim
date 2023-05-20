@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
 
 concurrency:
@@ -61,7 +61,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     environment: release
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     needs:
       - test
       - lint

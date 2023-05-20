@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "beewi-smartclim-ble"
-version = "0.2.0"
+version = "0.1.0"
 description = "Parser for the BeeWi SmartClim device"
 authors = ["f-davin <none@none.com>"]
 license = "MIT"
@@ -42,7 +42,7 @@ pytest = "^7.0"
 pytest-cov = "^3.0"
 
 [tool.semantic_release]
-branch = "master"
+branch = "releases"
 version_toml = "pyproject.toml:tool.poetry.version"
 version_variable = "src/smartclim_ble/__init__.py:__version__"
 build_command = "pip install poetry && poetry build"

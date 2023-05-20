@@ -42,7 +42,7 @@ pytest = "^7.0"
 pytest-cov = "^3.0"
 
 [tool.semantic_release]
-branch = "releases"
+branch = "master"
 version_toml = "pyproject.toml:tool.poetry.version"
 version_variable = "src/smartclim_ble/__init__.py:__version__"
 build_command = "pip install poetry && poetry build"

@@ -1,12 +1,12 @@
 import pytest
 from bleak.backends.scanner import AdvertisementData
 
-from smartclim_ble.parser import SensorData
+from smartclim_ble.parser import SmartClimSensorData
 
 
 def test_sensor_data_decode():
     # Advertising frame
-    sensor = SensorData()
+    sensor = SmartClimSensorData()
     sensor.decode(bytearray.fromhex("0500de00023b070000062e"), True)
     assert sensor.temperature == 22.2
     assert sensor.humidity == 59
@@ -33,7 +33,7 @@ def test_sensor_data_decode():
 
 def test_sensor_data_supported():
     ### Nominal case
-    sensor = SensorData()
+    sensor = SmartClimSensorData()
     adv_data = AdvertisementData(
         local_name="089352809434933736",
         service_data={},
@@ -162,7 +162,7 @@ def test_sensor_data_supported():
 
 def test_sensor_data_get_manuf_data():
     ### Nominal case
-    sensor = SensorData()
+    sensor = SmartClimSensorData()
     adv_data = AdvertisementData(
         local_name="089352809434933736",
         service_data={},

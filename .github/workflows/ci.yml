@@ -60,6 +60,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
+    concurrency: release
     environment: release
     if: github.ref == 'refs/heads/master'
     needs:

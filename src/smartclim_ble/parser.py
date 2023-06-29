@@ -18,6 +18,18 @@ class ManufacturerData:
     hw_revision: str = ""
     soft_revision: str = ""
 
+    def __hash__(self) -> int:
+        return hash(
+            (
+                self.manufacturer,
+                self.model,
+                self.serial,
+                self.fw_revision,
+                self.hw_revision,
+                self.soft_revision,
+            )
+        )
+
 
 @dataclass
 class SmartClimSensorData:
@@ -111,6 +123,9 @@ class SmartClimSensorData:
         else:
             raise Exception("Invalid data for this sensor.")
         return ret
+
+    def __hash__(self) -> int:
+        return hash((self.name, self.temperature, self.humidity, self.battery))
 
 
 @dataclass

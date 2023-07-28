@@ -7,9 +7,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
-from bleak import BleakClient
-from bleak.backends.device import BLEDevice
-from bleak.backends.scanner import AdvertisementData
 from bluetooth_sensor_state_data import BluetoothData
 from home_assistant_bluetooth import BluetoothServiceInfo
 from sensor_state_data import (
@@ -50,7 +47,7 @@ class BeeWiSmartClimBluetoothDeviceData(BluetoothData):
 
     def supported(self, data: BluetoothServiceInfo) -> bool:
         ret = False
-        manuf_data = data.advertisement.manufacturer_data
+        manuf_data = data.manufacturer_data
         if (
             len(manuf_data) == 1
             and self.__ADVERTISING_MANUFACTURING_DATA_KEY in manuf_data.keys()
@@ -104,21 +101,23 @@ class BeeWiSmartClimBluetoothDeviceData(BluetoothData):
         temp = int.from_bytes(raw_data[start_idx:stop_idx], "little")
         if temp >= 0x8000:
             temp = temp - 0xFFFF
-        temperature = temp / 10.0
-        humidity = raw_data[4 + offset]
-        battery = raw_data[9 + offset]
-        self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temperature)
-        self.update_predefined_sensor(SensorLibrary.HUMIDITY__PERCENTAGE, humidity)
-        self.update_predefined_sensor(SensorLibrary.BATTERY__PERCENTAGE, battery)
+        self.temperature = temp / 10.0
+        self.humidity = raw_data[4 + offset]
+        self.battery = raw_data[9 + offset]
+        self.update_predefined_sensor(
+            SensorLibrary.TEMPERATURE__CELSIUS, self.temperature
+        )
+        self.update_predefined_sensor(SensorLibrary.HUMIDITY__PERCENTAGE, self.humidity)
+        self.update_predefined_sensor(SensorLibrary.BATTERY__PERCENTAGE, self.battery)
 
         return True
 
-    def get_manufacturing_data(self, adv_data: AdvertisementData) -> bytearray:
+    def get_manufacturing_data(self, adv_data: BluetoothServiceInfo) -> bytearray:
         """
         Get the manufacturing data from the manufacturing frame.Z
 
         Args:
-            adv_data (AdvertisementData): Frame with data
+            adv_data (BluetoothServiceInfo): Frame with data
 
         Raises:
             Exception: Invalid data detected

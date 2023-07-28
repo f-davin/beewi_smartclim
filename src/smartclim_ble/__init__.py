@@ -12,7 +12,7 @@ from sensor_state_data import (
 
 from .parser import BeeWiSmartClimBluetoothDeviceData
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     "BeeWiSmartClimBluetoothDeviceData",

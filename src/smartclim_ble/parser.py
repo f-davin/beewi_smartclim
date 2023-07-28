@@ -329,58 +329,6 @@ class XiaomiBluetoothDeviceData(BluetoothData):
 
         return True
 
-    def _parse_hhcc(self, service_info: BluetoothServiceInfo, data: bytes) -> bool:
-        """Parser for Pink version of HHCCJCY10."""
-        if len(data) != 9:
-            return False
-
-        identifier = short_address(service_info.address)
-        self.set_title(f"Plant Sensor {identifier} (HHCCJCY10)")
-        self.set_device_name(f"Plant Sensor {identifier}")
-        self.set_device_type("HHCCJCY10")
-        self.set_device_manufacturer("HHCC Plant Technology Co. Ltd")
-
-        return True
-
-    def poll_needed(
-        self, service_info: BluetoothServiceInfo, last_poll: float | None
-    ) -> bool:
-        """
-        This is called every time we get a service_info for a device. It means the
-        device is working and online. If 24 hours has passed, it may be a good
-        time to poll the device.
-        """
-        if self.pending:
-            # Never need to poll if we are pending as we don't even know what
-            # kind of device we are
-            return False
-
-        if self.device_id != 0x0098:
-            return False
-
-        return not last_poll or last_poll > TIMEOUT_1DAY
-
-    async def async_poll(self, ble_device: BLEDevice) -> SensorUpdate:
-        """
-        Poll the device to retrieve any values we can't get from passive listening.
-        """
-        if self.device_id == 0x0098:
-            client = await establish_connection(
-                BleakClient, ble_device, ble_device.address
-            )
-            try:
-                battery_char = client.services.get_characteristic(
-                    CHARACTERISTIC_BATTERY
-                )
-                payload = await client.read_gatt_char(battery_char)
-            finally:
-                await client.disconnect()
-
-            self.set_device_sw_version(payload[2:].decode("utf-8"))
-            self.update_predefined_sensor(SensorLibrary.BATTERY__PERCENTAGE, payload[0])
-
-        return self._finish_update()
-
     def get_manufacturing_data(self, adv_data: AdvertisementData) -> bytearray:
         """
         Get the manufacturing data from the manufacturing frame.Z

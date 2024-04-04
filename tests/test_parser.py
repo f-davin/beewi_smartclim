@@ -35,7 +35,7 @@ def mock_platform():
 
 
 def bytes_to_service_info(
-    payload: (bytes | None), key: int, address: str = "00:00:00:00:00:00"
+    payload: bytes | None, key: int, address: str = "00:00:00:00:00:00"
 ) -> BluetoothServiceInfo:
     manuf_data = {}
     if payload is not None:
